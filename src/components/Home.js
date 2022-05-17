@@ -76,10 +76,21 @@ console.log();
             <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '15rem', marginTop: '-3rem'}}>{cTime}</Typography>
             <Typography variant="h1" sx={{color: '#fff', fontWeight: 'bolder', fontSize: '3rem'}}>{cDate}</Typography>
           </Box>
+
+          <Card className={styles['card-bottom']}>
+            <Box className={styles['weather-temperature-summary']}>
+              <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '8rem', marginTop: '-1.5rem'}}>{"22°"}</Typography>
+              <Typography variant="h1" sx={{color: '#fff', fontWeight: 'bolder', fontSize: '1.7rem', marginTop: '-1.5rem'}}>{"H:32° L:15°"}</Typography>
+            </Box>
+            <Box className={styles['weather-forecast']}>
+            </Box>
+          </Card>
         </Grid>
 
         <Grid item xs={5} key={3}>
-          
+          <Card className={styles['card']}>
+            
+          </Card>
         </Grid>
 
       </Grid>
