@@ -23,7 +23,15 @@ import Chip from './Chip.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
+import axios from "axios";
+
 import me from '../resources/me.jpg';
+
+let axiosClient = axios.create({
+  baseURL: "http://dataservice.accuweather.com/forecasts/v1/",
+  responseType: 'json',
+  timeout: 45000,
+});
 
 function Home() {
 
@@ -43,6 +51,8 @@ function Home() {
   const [cTime, setTime] = useState();
   const [cDate, setDate] = useState();
 
+  const [weather, setWeather] = useState();
+
   useEffect(() => {
     let timer = setInterval(() => {
       var today = new Date();
@@ -55,7 +65,35 @@ function Home() {
     }
   });
 
-console.log(); 
+  useEffect(() => {
+    let timer = setInterval(() => {
+      axiosClient.get("daily/1day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
+        .then((response) => {
+          console.log(response)
+          setWeather(response);
+        });
+    }, 3600000);
+    
+    return () => {
+      clearInterval(timer);
+    }
+  });
+
+  const getWeatherForecast = () => {
+    if (weather) {
+      if (weather.data) {
+        if (weather.data.DailyForecasts.length > 0) {
+          if (weather.data.DailyForecasts[0].temperature) {
+            return `H:${weather.data.DailyForecasts[0].temperature.Maximum.value}° L:${weather.data.DailyForecasts[0].temperature.Minimum.value}°`;
+          }
+        }
+      }
+    }
+
+    return "H:?? L:??"
+  }
+
+  
 
   return (
     <Box 
@@ -80,7 +118,7 @@ console.log();
           <Card className={styles['card-bottom']}>
             <Box className={styles['weather-temperature-summary']}>
               <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '8rem', marginTop: '-1.5rem'}}>{"22°"}</Typography>
-              <Typography variant="h1" sx={{color: '#fff', fontWeight: 'bolder', fontSize: '1.7rem', marginTop: '-1.5rem'}}>{"H:32° L:15°"}</Typography>
+              <Typography variant="h1" sx={{color: '#fff', fontWeight: 'bolder', fontSize: '1.7rem', marginTop: '-1.5rem'}}>{getWeatherForecast()}</Typography>
             </Box>
             <Box className={styles['weather-forecast']}>
             </Box>
