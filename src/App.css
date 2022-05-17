@@ -1,0 +1,27 @@
+/* body {
+  overflow: hidden;
+} */
+
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.flex-row-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-col-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.jc-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}

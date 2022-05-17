@@ -1,0 +1,12 @@
+.chip {
+  color: rgba(90, 90, 90, .90) !important;
+  background-color: rgba(255, 255, 255, .75) !important;  
+  border-radius: 5px;
+  padding-left: 5px;
+  padding-right: 5px;  
+}
+
+.chip-alt {
+  color: rgba(255, 255, 255, .75) !important;
+  background-color: rgba(90, 90, 90, .90) !important;  
+}
