@@ -114,7 +114,7 @@ function Home() {
     const forecast = weatherForecast?.DailyForecasts.filter((t) => {
       return dateObj.getDate() == new Date(t.Date).getDate();
     })
-    return forecast.length > 0 ? forecast[0] : null;
+    return forecast?.length > 0 ? forecast[0] : null;
   }
 
   const getCurrentWeather = () => {
