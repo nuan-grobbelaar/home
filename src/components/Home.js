@@ -27,37 +27,52 @@ import axios from "axios";
 
 import me from '../resources/me.jpg';
 
+let options = {  
+  hour: "2-digit", 
+  minute: "2-digit", 
+  hour12: false
+};  
+
+let dateOptions = {
+  month: "long",  
+  day: "numeric"
+};
+
 let axiosClient = axios.create({
-  baseURL: "http://dataservice.accuweather.com/forecasts/v1/",
+  baseURL: "http://dataservice.accuweather.com/",
   responseType: 'json',
   timeout: 45000,
 });
 
+let getTimeString = function(date) {
+  return date?.toLocaleTimeString("en-us", options)
+}
+
+let getDateString = function(date) {
+  return date?.toLocaleDateString("en-us", dateOptions)
+}
+
 function Home() {
 
-  
-  // var time = today.getHours() + ":" + today.getMinutes();
-  let options = {  
-    hour: "2-digit", 
-    minute: "2-digit", 
-    hour12: false
-  };  
-  
-  let dateOptions = {
-    month: "long",  
-    day: "numeric"
-  };
-
-  const [cTime, setTime] = useState();
-  const [cDate, setDate] = useState();
-
+  const [lastUpdate, setLastUpdate] = useState(-1);
+  const [dateObj, setDateObj] = useState();
   const [weather, setWeather] = useState();
+  const [weatherForecast, setWeatherForecast] = useState();
+
+  useEffect(() => {
+    var today = new Date();
+    setDateObj(today);
+
+    axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
+        .then((response) => {
+          setWeatherForecast(response.data);
+        });
+  }, []);
 
   useEffect(() => {
     let timer = setInterval(() => {
       var today = new Date();
-      setTime(today.toLocaleTimeString("en-us", options));
-      setDate(today.toLocaleDateString("en-us", dateOptions));
+      setDateObj(today);
     }, 5000);
     
     return () => {
@@ -66,31 +81,35 @@ function Home() {
   });
 
   useEffect(() => {
-    let timer = setInterval(() => {
-      axiosClient.get("daily/1day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
+    if (dateObj && lastUpdate != dateObj?.getHours()) {
+      axiosClient.get("currentconditions/v1/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC")
         .then((response) => {
-          console.log(response)
-          setWeather(response);
+          setLastUpdate(dateObj.getHours());
+          setWeather(response.data[0]);
         });
-    }, 3600000);
-    
-    return () => {
-      clearInterval(timer);
     }
-  });
+  }, [dateObj]);
+
+  useEffect(() => {
+    if (dateObj && dateObj?.getHours() == 6) {
+      axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
+        .then((response) => {
+          setWeatherForecast(response.data);
+        });
+    }
+  }, [dateObj]);
 
   const getWeatherForecast = () => {
-    if (weather) {
-      if (weather.data) {
-        if (weather.data.DailyForecasts.length > 0) {
-          if (weather.data.DailyForecasts[0].temperature) {
-            return `H:${weather.data.DailyForecasts[0].temperature.Maximum.value}° L:${weather.data.DailyForecasts[0].temperature.Minimum.value}°`;
-          }
-        }
-      }
-    }
+    if (!weatherForecast) return "H:?? L:??";
+    if (weatherForecast.DailyForecasts.length <= 0) return "H:?? L:??";
+    if (!weatherForecast.DailyForecasts[0].Temperature) return "H:?? L:??";
 
-    return "H:?? L:??"
+    return `H: ${Math.round(weatherForecast.DailyForecasts[0].Temperature.Maximum.Value)}° ` 
+      + `L: ${Math.round(weatherForecast.DailyForecasts[0].Temperature.Minimum.Value)}°`;
+  }
+
+  const getCurrentWeather = () => {
+    return `${Math.round(weather?.Temperature?.Metric?.Value)}°`;
   }
 
   
@@ -111,14 +130,18 @@ function Home() {
 
         <Grid item xs={5} key={1}>
           <Box className={styles['box-alt']}>
-            <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '15rem', marginTop: '-3rem'}}>{cTime}</Typography>
-            <Typography variant="h1" sx={{color: '#fff', fontWeight: 'bolder', fontSize: '3rem'}}>{cDate}</Typography>
+            <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '15rem', marginTop: '-3rem'}}>
+              {getTimeString(dateObj)}
+            </Typography>
+            <Typography variant="h1" sx={{color: '#fff', fontWeight: 'bolder', fontSize: '3rem'}}>
+              {getDateString(dateObj)}
+            </Typography>
           </Box>
 
           <Card className={styles['card-bottom']}>
             <Box className={styles['weather-temperature-summary']}>
-              <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '8rem', marginTop: '-1.5rem'}}>{"22°"}</Typography>
-              <Typography variant="h1" sx={{color: '#fff', fontWeight: 'bolder', fontSize: '1.7rem', marginTop: '-1.5rem'}}>{getWeatherForecast()}</Typography>
+              <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '8rem', marginTop: '-1.5rem'}}>{getCurrentWeather()}</Typography>
+              <Typography variant="h1" sx={{color: '#fff', fontWeight: 'bolder', fontSize: '1.4rem', marginLeft: '1.5rem', marginTop: '-1rem'}}>{getWeatherForecast()}</Typography>
             </Box>
             <Box className={styles['weather-forecast']}>
             </Box>
