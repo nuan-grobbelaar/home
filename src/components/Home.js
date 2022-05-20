@@ -108,6 +108,10 @@ function Home() {
       + `L: ${Math.round(weatherForecast.DailyForecasts[0].Temperature.Minimum.Value)}°`;
   }
 
+  const getForecastToday = () => {
+    return weatherForecast.DailyForecasts.length > 0 ? weatherForecast.DailyForecasts[0] : null;
+  }
+
   const getCurrentWeather = () => {
     return `${Math.round(weather?.Temperature?.Metric?.Value)}°`;
   }
@@ -140,8 +144,64 @@ function Home() {
 
           <Card className={styles['card-bottom']}>
             <Box className={styles['weather-temperature-summary']}>
-              <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '8rem', marginTop: '-1.5rem'}}>{getCurrentWeather()}</Typography>
-              <Typography variant="h1" sx={{color: '#fff', fontWeight: 'bolder', fontSize: '1.4rem', marginLeft: '1.5rem', marginTop: '-1rem'}}>{getWeatherForecast()}</Typography>
+              <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '9rem', marginTop: '-1.5rem'}}>{getCurrentWeather()}</Typography>
+              <Typography 
+                variant="h1" 
+                sx={{
+                  color: '#fff', 
+                  fontWeight: 'bolder', 
+                  fontSize: '2rem',
+                  marginLeft: '1.2rem', 
+                  marginTop: '-1rem'
+                }}
+              >
+                {getWeatherForecast()}
+              </Typography>
+              <Box 
+                sx={{
+                  display: 'flex', 
+                  flexDirection: 'row', 
+                  alignItems: 'center', 
+                  marginLeft: '0.75rem', 
+                  marginTop: '0.75rem'
+                }}
+              >
+                <Box 
+                  sx={{
+                    display: 'flex', 
+                    flexDirection: 'row', 
+                    alignItems: 'center', 
+                    paddingLeft: '8px', 
+                    paddingRight: '8px', 
+                    paddingTop: '4px', 
+                    paddingBottom: '4px', 
+                    backgroundColor: '#ffffff', 
+                    color: '#EA9300',
+                    borderRadius: '5px'
+                  }}
+                >
+                  <FontAwesomeIcon sx={{  }} icon={solid('sun')} size="lg"/>
+                  <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getForecastToday().Sun.Rise.split('T')[1].substring(0,5)}</Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex', 
+                    flexDirection: 'row', 
+                    alignItems: 'center', 
+                    marginLeft: '0.5rem',
+                    paddingLeft: '8px', 
+                    paddingRight: '8px', 
+                    paddingTop: '4px', 
+                    paddingBottom: '4px', 
+                    backgroundColor: '#ffffff', 
+                    color: '#6699CC',
+                    borderRadius: '5px'
+                  }}
+                >
+                  <FontAwesomeIcon icon={solid('moon')} size="lg"/>
+                  <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getForecastToday().Sun.Set.split('T')[1].substring(0,5)}</Typography>
+                </Box>
+              </Box>
             </Box>
             <Box className={styles['weather-forecast']}>
             </Box>
