@@ -106,8 +106,8 @@ function Home() {
   }, [dateObj]);
 
   const getWeatherForecast = () => {
-    return `H: ${Math.round(getForecastToday().Temperature.Maximum.Value)}° ` 
-      + `L: ${Math.round(getForecastToday().Temperature.Minimum.Value)}°`;
+    return `H: ${Math.round(getForecastToday()?.Temperature.Maximum.Value)}° ` 
+      + `L: ${Math.round(getForecastToday()?.Temperature.Minimum.Value)}°`;
   }
 
   const getForecastToday = () => {
