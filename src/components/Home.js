@@ -92,7 +92,7 @@ function Home() {
   }, [dateObj]);
 
   useEffect(() => {
-    if (dateObj && dateObj?.getHours() == 6) {
+    if (dateObj && dateObj?.getHours() == 0) {
       if (!gotForecast) {
       	axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
           .then((response) => {
@@ -106,16 +106,15 @@ function Home() {
   }, [dateObj]);
 
   const getWeatherForecast = () => {
-    if (!weatherForecast) return "H:?? L:??";
-    if (weatherForecast.DailyForecasts.length <= 0) return "H:?? L:??";
-    if (!weatherForecast.DailyForecasts[0].Temperature) return "H:?? L:??";
-
-    return `H: ${Math.round(weatherForecast.DailyForecasts[0].Temperature.Maximum.Value)}° ` 
-      + `L: ${Math.round(weatherForecast.DailyForecasts[0].Temperature.Minimum.Value)}°`;
+    return `H: ${Math.round(getForecastToday().Temperature.Maximum.Value)}° ` 
+      + `L: ${Math.round(getForecastToday().Temperature.Minimum.Value)}°`;
   }
 
   const getForecastToday = () => {
-    return weatherForecast.DailyForecasts.length > 0 ? weatherForecast.DailyForecasts[0] : null;
+    const forecast = weatherForecast?.DailyForecasts.filter((t) => {
+      return dateObj.getDate() == new Date(t.Date).getDate();
+    })
+    return forecast.length > 0 ? forecast[0] : null;
   }
 
   const getCurrentWeather = () => {
@@ -187,7 +186,7 @@ function Home() {
                   }}
                 >
                   <FontAwesomeIcon sx={{  }} icon={solid('sun')} size="lg"/>
-                  <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getForecastToday().Sun.Rise.split('T')[1].substring(0,5)}</Typography>
+                  <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getForecastToday() ? getForecastToday().Sun.Rise.split('T')[1].substring(0,5) : ''}</Typography>
                 </Box>
                 <Box
                   sx={{
@@ -205,7 +204,7 @@ function Home() {
                   }}
                 >
                   <FontAwesomeIcon icon={solid('moon')} size="lg"/>
-                  <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getForecastToday().Sun.Set.split('T')[1].substring(0,5)}</Typography>
+                  <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getForecastToday() ? getForecastToday().Sun.Set.split('T')[1].substring(0,5) : ''}</Typography>
                 </Box>
               </Box>
             </Box>
