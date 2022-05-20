@@ -55,6 +55,7 @@ let getDateString = function(date) {
 function Home() {
 
   const [lastUpdate, setLastUpdate] = useState(-1);
+  const [gotForecast, setGotForecast] = useState(false);
   const [dateObj, setDateObj] = useState();
   const [weather, setWeather] = useState();
   const [weatherForecast, setWeatherForecast] = useState();
@@ -92,10 +93,15 @@ function Home() {
 
   useEffect(() => {
     if (dateObj && dateObj?.getHours() == 6) {
-      axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
-        .then((response) => {
-          setWeatherForecast(response.data);
-        });
+      if (!gotForecast) {
+      	axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
+          .then((response) => {
+            setWeatherForecast(response.data);
+	    setGotForecast(true);
+          });
+      }
+    } else {
+      setGotForecast(false);
     }
   }, [dateObj]);
 
