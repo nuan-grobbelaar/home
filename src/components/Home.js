@@ -92,7 +92,7 @@ function Home() {
   }, [dateObj]);
 
   useEffect(() => {
-    if (dateObj && dateObj?.getHours() == 0) {
+    if (dateObj && dateObj?.getHours() % 4 == 0) {
       if (!gotForecast) {
       	axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
           .then((response) => {
@@ -156,7 +156,7 @@ function Home() {
                   color: '#fff', 
                   fontWeight: 'bolder', 
                   fontSize: '2rem',
-                  marginLeft: '1.2rem', 
+                  marginLeft: '1rem', 
                   marginTop: '-1rem'
                 }}
               >
