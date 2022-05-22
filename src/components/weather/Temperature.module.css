@@ -31,3 +31,18 @@
   margin-left: -0.69rem !important;
   color: rgba(80, 80, 80, .80) !important; 
 }
+
+.small-temp-main {
+  font-weight: bolder !important;
+  font-size: 1rem !important;
+  color: rgba(80, 80, 80, .80);
+}
+
+.small-temp-accent {
+  color: #000 !important;
+  font-weight: bolder !important;
+  font-size: 0.55rem !important; 
+  margin-top: 0.53rem !important;
+  margin-left: -0.36rem !important;
+  color: #000; 
+}

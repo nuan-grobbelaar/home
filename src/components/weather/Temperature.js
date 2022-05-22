@@ -1,5 +1,5 @@
 import * as React from 'react';
-import "../App.css"
+import "../../App.css"
 import styles from './Temperature.module.css'
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -18,7 +18,7 @@ function Temperature(props) {
   return (
     <Box sx={props.sx} className={styles.box}>
       <Typography className={styles[classes[0]]}>
-        {props.children ? props.children : 'NaN'}
+        {`${props.children ? props.children : '00'}°`}
       </Typography>
       <Typography className={styles[classes[1]]}>
         {props.children ? 'c' : ''}

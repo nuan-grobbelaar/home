@@ -18,7 +18,9 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 
-import Temperature from './Temperature.js';
+import Temperature from './weather/Temperature.js';
+import ForecastContainer from './weather/ForecastContainer.js';
+import ForecastCard from './weather/ForecastCard.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
@@ -59,6 +61,7 @@ function Home() {
   const [dateObj, setDateObj] = useState();
   const [weather, setWeather] = useState();
   const [weatherForecast, setWeatherForecast] = useState();
+  const [weeklyForecast, setWeeklyForecast] = useState([]);
 
   useEffect(() => {
     var today = new Date();
@@ -85,20 +88,20 @@ function Home() {
     if (dateObj && lastUpdate != dateObj.getHours()) {
       axiosClient.get("currentconditions/v1/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC")
         .then((response) => {
-          setLastUpdate(dateObj.getHours());
           setWeather(response.data[0]);
-        });
+        }).finally(setLastUpdate(dateObj.getHours()));
     }
   }, [dateObj]);
 
   useEffect(() => {
     if (dateObj && dateObj.getHours() % 4 == 0) {
       if (!gotForecast) {
-      	axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
+      	axiosClient.get("forecasts/v1/daily/10day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
           .then((response) => {
             setWeatherForecast(response.data);
-	          setGotForecast(true);
-          });
+            setWeeklyForecast(getForecastRange(1, 4));
+	          
+          }).finally(setGotForecast(true));
       }
     } else {
       setGotForecast(false);
@@ -107,12 +110,12 @@ function Home() {
 
   const getTodayHigh = () => {
     let today = getForecast(0);
-    return today ? `${Math.round(today.Temperature.Maximum.Value)}°` : "00°";
+    return today ? `${Math.round(today.Temperature.Maximum.Value)}` : "00";
   }
 
   const getTodayLow = () => {
     let today = getForecast(0);
-    return today ? `${Math.round(today.Temperature.Minimum.Value)}°` : "00°";
+    return today ? `${Math.round(today.Temperature.Minimum.Value)}` : "00";
   }
 
   const getSunrise = (offset) => {
@@ -122,7 +125,12 @@ function Home() {
 
   const getSunset = (offset) => {
     let today = getForecast(offset);
-    return today ? today.Sun.Set.split('T')[1].substring(0,5) : '00:00';
+    return today ? today.Sun.Set.split('T')[1].substring(0,5) : '22:00';
+  }
+
+  const getTodayMoonPhase = () => {
+    let today = getForecast(0);
+    return today ? `${today.Moon.phase}` : "cheesy";
   }
 
   const isDay = () => {
@@ -149,6 +157,7 @@ function Home() {
     }) : null;
 
     if (offset == 1) {
+      console.log('tomorrow:')
       console.log(forecast);
     }
 
@@ -156,8 +165,18 @@ function Home() {
     return forecast[0];
   }
 
+  const getForecastRange = (start, end) => {
+    const forecast = weatherForecast ? weatherForecast.DailyForecasts.filter((t) => {
+      let date = new Date(t.Date).getDate();
+      return date >= addDays(dateObj.getDate(), start) && date <= addDays(dateObj.getDate(), end);
+    }) : null;
+
+    if (!forecast) return '';
+    return forecast;
+  }
+
   const getCurrentWeather = () => {
-    return weather ? `${Math.round(weather.Temperature.Metric.Value)}°` : "00°";
+    return weather ? `${Math.round(weather.Temperature.Metric.Value)}` : "00";
   }
 
   
@@ -194,21 +213,15 @@ function Home() {
               <Temperature size='large'>
                 {getCurrentWeather()}
               </Temperature>
-              {/* <Typography 
-                variant="h1" 
-                sx={{
-                  color: '#fff', 
-                  fontWeight: 'bolder', 
-                  fontSize: '1.9rem',
-                  marginLeft: '1rem', 
-                  marginTop: '-1rem'
-                }}
-              >
-                {getWeatherForecast()}
-              </Typography> */}
               <Box sx={{display: 'flex', flexDirection: 'row', marginTop: '-2rem'}}>
-                <Temperature size='medium'>{`L: ${getTodayLow()}`}</Temperature>
-                <Temperature sx={{marginLeft: '1rem'}} size='medium'>{`H: ${getTodayHigh()}`}</Temperature>
+                <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                  <FontAwesomeIcon style={{marginRight: '0.5rem', color: '#EA0D01'}} icon={solid('chevron-up')} size="lg"/>
+                  <Temperature size='medium'>{getTodayLow()}</Temperature>
+                </Box>
+                <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginLeft: '1.5rem'}}>
+                  <FontAwesomeIcon style={{marginRight: '0.5rem', color: '#2F66A9'}} icon={solid('chevron-down')} size="lg"/>
+                  <Temperature size='medium'>{getTodayHigh()}</Temperature>
+                </Box>
               </Box>
               <Box 
                 sx={{
@@ -222,19 +235,31 @@ function Home() {
                 {isDay() ? 
                   <Box className={styles['sunset-container']}>
                     <FontAwesomeIcon icon={solid('moon')} size="lg"/>
-                    <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getSunInfo()}</Typography>
+                    <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>
+                      {getSunInfo()}
+                    </Typography>
                   </Box>
                   :
                   <Box className={styles['sunrise-container']}>
                     <FontAwesomeIcon sx={{  }} icon={solid('sun')} size="lg"/>
-                    <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getSunInfo()}
+                    <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>
+                      {getSunInfo()}
                     </Typography>
                   </Box>
                 }
+                {isDay() && 
+                  <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>
+                    {getTodayMoonPhase()}
+                  </Typography>
+                }
               </Box>
             </Box>
-            <Box className={styles['weather-forecast']}>
-            </Box>
+            <ForecastContainer>
+              {weeklyForecast.map(forecast =>
+                <ForecastCard forecast={forecast}>
+                </ForecastCard>
+              )}
+            </ForecastContainer>
           </Card>
         </Grid>
 

@@ -1,0 +1,68 @@
+import React, { useState, useEffect } from 'react';
+import "../../App.css"
+import styles from './ForecastCard.module.css'
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
+
+import Temperature from './Temperature.js';
+
+function ForecastCard(props) {
+
+  const [forecast, setForecast] = useState({});
+
+  useEffect(() => {
+    props.forecast ? setForecast({
+      date: props.forecast.Date,
+      max: props.forecast.Temperature.Maximum.Value,
+      min: props.forecast.Temperature.Minimum.Value,
+      icon: props.forecast.Day.Icon,
+      phrase: props.forecast.Day.IconPhrase,
+      longPhrase: props.forecast.Day.LongPhrase
+    }) : setForecast({
+      date: 'Monday, 31 Feb',
+      max: '00',
+      min: '00',
+      icon: '',
+      phrase: '',
+      longPhrase: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et'
+    });
+
+    console.log(forecast);
+  }, [props.forecast]);
+  
+
+  return (
+    <Box sx={props.sx} className={styles.card}>
+      <Box className={styles['icon-container']}>
+        <FontAwesomeIcon icon={solid('moon')} size="xl"/>
+      </Box>
+      <Box className={styles['weather-summary']}>
+        <Box className={styles['details']}>
+          <Typography>
+            {forecast.date}
+          </Typography>
+          <Box sx={{display: 'flex', flexDirection: 'row', marginLeft: 'auto'}}>
+            <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+              <FontAwesomeIcon style={{marginRight: '0.3rem', color: '#EA0D01'}} icon={solid('chevron-up')} size="xs"/>
+              <Temperature size='small'>{forecast.max}</Temperature>
+            </Box>
+            <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginLeft: '0.6rem'}}>
+              <FontAwesomeIcon style={{marginRight: '0.3rem', color: '#2F66A9'}} icon={solid('chevron-down')} size="xs"/>
+              <Temperature size='small'>{forecast.min}</Temperature>
+            </Box>
+          </Box>
+        </Box>
+        <Box className={styles['summary']}>
+          <Typography sx={{fontSize: '0.7rem'}}>
+            {forecast.longPhrase}
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
+export default ForecastCard;
