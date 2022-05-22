@@ -18,7 +18,7 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 
-import Chip from './Chip.js';
+import Temperature from './Temperature.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
@@ -45,11 +45,11 @@ let axiosClient = axios.create({
 });
 
 let getTimeString = function(date) {
-  return date?.toLocaleTimeString("en-us", options)
+  return date ? date.toLocaleTimeString("en-us", options) : '';
 }
 
 let getDateString = function(date) {
-  return date?.toLocaleDateString("en-us", dateOptions)
+  return date ? date.toLocaleDateString("en-us", dateOptions) : '';
 }
 
 function Home() {
@@ -82,7 +82,7 @@ function Home() {
   });
 
   useEffect(() => {
-    if (dateObj && lastUpdate != dateObj?.getHours()) {
+    if (dateObj && lastUpdate != dateObj.getHours()) {
       axiosClient.get("currentconditions/v1/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC")
         .then((response) => {
           setLastUpdate(dateObj.getHours());
@@ -92,12 +92,12 @@ function Home() {
   }, [dateObj]);
 
   useEffect(() => {
-    if (dateObj && dateObj?.getHours() % 4 == 0) {
+    if (dateObj && dateObj.getHours() % 4 == 0) {
       if (!gotForecast) {
       	axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
           .then((response) => {
             setWeatherForecast(response.data);
-	    setGotForecast(true);
+	          setGotForecast(true);
           });
       }
     } else {
@@ -105,20 +105,59 @@ function Home() {
     }
   }, [dateObj]);
 
-  const getWeatherForecast = () => {
-    return `H: ${Math.round(getForecastToday()?.Temperature.Maximum.Value)}° ` 
-      + `L: ${Math.round(getForecastToday()?.Temperature.Minimum.Value)}°`;
+  const getTodayHigh = () => {
+    let today = getForecast(0);
+    return today ? `${Math.round(today.Temperature.Maximum.Value)}°` : "00°";
   }
 
-  const getForecastToday = () => {
-    const forecast = weatherForecast?.DailyForecasts.filter((t) => {
-      return dateObj.getDate() == new Date(t.Date).getDate();
-    })
-    return forecast?.length > 0 ? forecast[0] : null;
+  const getTodayLow = () => {
+    let today = getForecast(0);
+    return today ? `${Math.round(today.Temperature.Minimum.Value)}°` : "00°";
+  }
+
+  const getSunrise = (offset) => {
+    let today = getForecast(offset);
+    return today ? today.Sun.Rise.split('T')[1].substring(0,5) : '00:00';
+  }
+
+  const getSunset = (offset) => {
+    let today = getForecast(offset);
+    return today ? today.Sun.Set.split('T')[1].substring(0,5) : '00:00';
+  }
+
+  const isDay = () => {
+    if (!dateObj) return false;
+    return dateObj.getHours() <= Number(getSunset().split(':')[0]) 
+      && dateObj.getHours() > Number(getSunrise().split(':')[0]);
+  }
+
+  const getSunInfo = () => {
+    if (!dateObj) return '00:00';
+    if (isDay()) return getSunset(0);
+    else return getSunrise(1);
+  }
+
+  const addDays = (date, days) => {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
+  const getForecast = (offset) => {
+    const forecast = weatherForecast ? weatherForecast.DailyForecasts.filter((t) => {
+      return addDays(dateObj.getDate(), offset) == new Date(t.Date).getDate();
+    }) : null;
+
+    if (offset == 1) {
+      console.log(forecast);
+    }
+
+    if (!forecast || forecast.length <= 0) return '';
+    return forecast[0];
   }
 
   const getCurrentWeather = () => {
-    return `${Math.round(weather?.Temperature?.Metric?.Value)}°`;
+    return weather ? `${Math.round(weather.Temperature.Metric.Value)}°` : "00°";
   }
 
   
@@ -149,19 +188,28 @@ function Home() {
 
           <Card className={styles['card-bottom']}>
             <Box className={styles['weather-temperature-summary']}>
-              <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '9rem', marginTop: '-1.5rem'}}>{getCurrentWeather()}</Typography>
-              <Typography 
+              {/* <Typography variant="h1" sx={{fontWeight: 'bolder', fontSize: '9rem', marginTop: '-1.5rem'}}>
+                {getCurrentWeather()}
+              </Typography> */}
+              <Temperature size='large'>
+                {getCurrentWeather()}
+              </Temperature>
+              {/* <Typography 
                 variant="h1" 
                 sx={{
                   color: '#fff', 
                   fontWeight: 'bolder', 
-                  fontSize: '2rem',
+                  fontSize: '1.9rem',
                   marginLeft: '1rem', 
                   marginTop: '-1rem'
                 }}
               >
                 {getWeatherForecast()}
-              </Typography>
+              </Typography> */}
+              <Box sx={{display: 'flex', flexDirection: 'row', marginTop: '-2rem'}}>
+                <Temperature size='medium'>{`L: ${getTodayLow()}`}</Temperature>
+                <Temperature sx={{marginLeft: '1rem'}} size='medium'>{`H: ${getTodayHigh()}`}</Temperature>
+              </Box>
               <Box 
                 sx={{
                   display: 'flex', 
@@ -171,41 +219,18 @@ function Home() {
                   marginTop: '0.75rem'
                 }}
               >
-                <Box 
-                  sx={{
-                    display: 'flex', 
-                    flexDirection: 'row', 
-                    alignItems: 'center', 
-                    paddingLeft: '8px', 
-                    paddingRight: '8px', 
-                    paddingTop: '4px', 
-                    paddingBottom: '4px', 
-                    backgroundColor: '#ffffff', 
-                    color: '#EA9300',
-                    borderRadius: '5px'
-                  }}
-                >
-                  <FontAwesomeIcon sx={{  }} icon={solid('sun')} size="lg"/>
-                  <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getForecastToday() ? getForecastToday().Sun.Rise.split('T')[1].substring(0,5) : ''}</Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: 'flex', 
-                    flexDirection: 'row', 
-                    alignItems: 'center', 
-                    marginLeft: '0.5rem',
-                    paddingLeft: '8px', 
-                    paddingRight: '8px', 
-                    paddingTop: '4px', 
-                    paddingBottom: '4px', 
-                    backgroundColor: '#ffffff', 
-                    color: '#6699CC',
-                    borderRadius: '5px'
-                  }}
-                >
-                  <FontAwesomeIcon icon={solid('moon')} size="lg"/>
-                  <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getForecastToday() ? getForecastToday().Sun.Set.split('T')[1].substring(0,5) : ''}</Typography>
-                </Box>
+                {isDay() ? 
+                  <Box className={styles['sunset-container']}>
+                    <FontAwesomeIcon icon={solid('moon')} size="lg"/>
+                    <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getSunInfo()}</Typography>
+                  </Box>
+                  :
+                  <Box className={styles['sunrise-container']}>
+                    <FontAwesomeIcon sx={{  }} icon={solid('sun')} size="lg"/>
+                    <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>{getSunInfo()}
+                    </Typography>
+                  </Box>
+                }
               </Box>
             </Box>
             <Box className={styles['weather-forecast']}>
