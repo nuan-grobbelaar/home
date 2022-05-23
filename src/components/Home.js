@@ -96,7 +96,7 @@ function Home() {
   useEffect(() => {
     if (dateObj && dateObj.getHours() % 4 == 0) {
       if (!gotForecast) {
-      	axiosClient.get("forecasts/v1/daily/10day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
+      	axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
           .then((response) => {
             setWeatherForecast(response.data);
             setWeeklyForecast(getForecastRange(1, 4));
