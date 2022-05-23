@@ -60,7 +60,7 @@ function Home() {
   const [gotForecast, setGotForecast] = useState(false);
   const [dateObj, setDateObj] = useState();
   const [weather, setWeather] = useState();
-  const [weatherForecast, setWeatherForecast] = useState();
+  const [weatherForecast, setWeatherForecast] = useState([]);
   const [weeklyForecast, setWeeklyForecast] = useState([]);
 
   useEffect(() => {
@@ -94,6 +94,8 @@ function Home() {
   }, [dateObj]);
 
   useEffect(() => {
+    console.log(getForecastRange(1, 4))
+    setWeeklyForecast(getForecastRange(1, 4));
     if (dateObj && dateObj.getHours() % 4 == 0) {
       if (!gotForecast) {
       	axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
@@ -102,7 +104,9 @@ function Home() {
             setWeeklyForecast(getForecastRange(1, 4));
 	          
           }).finally(setGotForecast(true));
+        
       }
+      
     } else {
       setGotForecast(false);
     }
@@ -134,13 +138,15 @@ function Home() {
   }
 
   const isDay = () => {
-    if (!dateObj) return false;
-    return dateObj.getHours() <= Number(getSunset().split(':')[0]) 
-      && dateObj.getHours() > Number(getSunrise().split(':')[0]);
+    const today = new Date();
+    if (!today) return false;
+    return today.getHours() <= Number(getSunset(0).split(':')[0]) 
+      && today.getHours() > Number(getSunrise(0).split(':')[0]);
   }
 
   const getSunInfo = () => {
-    if (!dateObj) return '00:00';
+    const today = new Date();
+    if (!today) return '00:00';
     if (isDay()) return getSunset(0);
     else return getSunrise(1);
   }
@@ -152,24 +158,28 @@ function Home() {
   }
 
   const getForecast = (offset) => {
-    const forecast = weatherForecast ? weatherForecast.DailyForecasts.filter((t) => {
-      return addDays(dateObj.getDate(), offset) == new Date(t.Date).getDate();
-    }) : null;
+    const today = new Date();
+    if (!weatherForecast || !weatherForecast.DailyForecasts) return null;
+    const forecast = weatherForecast.DailyForecasts.filter((t) => {
+      return today ? addDays(today, offset).getDate() == new Date(t.Date).getDate() : false;
+    });
 
-    if (offset == 1) {
-      console.log('tomorrow:')
-      console.log(forecast);
-    }
+    // if (offset == 1) {
+    //   console.log('tomorrow:')
+    //   console.log(forecast);
+    // }
 
     if (!forecast || forecast.length <= 0) return '';
     return forecast[0];
   }
 
   const getForecastRange = (start, end) => {
-    const forecast = weatherForecast ? weatherForecast.DailyForecasts.filter((t) => {
+    const today = new Date();
+    if (!weatherForecast || !weatherForecast.DailyForecasts) return [];
+    const forecast = weatherForecast.DailyForecasts.filter((t) => {
       let date = new Date(t.Date).getDate();
-      return date >= addDays(dateObj.getDate(), start) && date <= addDays(dateObj.getDate(), end);
-    }) : null;
+      return date >= addDays(today, start).getDate() && date <= addDays(today, end).getDate();
+    });
 
     if (!forecast) return '';
     return forecast;

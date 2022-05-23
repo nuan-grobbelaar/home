@@ -15,14 +15,14 @@ function ForecastCard(props) {
 
   useEffect(() => {
     props.forecast ? setForecast({
-      date: props.forecast.Date,
-      max: props.forecast.Temperature.Maximum.Value,
-      min: props.forecast.Temperature.Minimum.Value,
+      date: new Date(props.forecast.Date),
+      max: Math.round(props.forecast.Temperature.Maximum.Value),
+      min: Math.round(props.forecast.Temperature.Minimum.Value),
       icon: props.forecast.Day.Icon,
       phrase: props.forecast.Day.IconPhrase,
       longPhrase: props.forecast.Day.LongPhrase
     }) : setForecast({
-      date: 'Monday, 31 Feb',
+      date: new Date(),
       max: '00',
       min: '00',
       icon: '',
@@ -32,6 +32,15 @@ function ForecastCard(props) {
 
     console.log(forecast);
   }, [props.forecast]);
+
+  let dateOptions = {
+    month: "long",  
+    day: "numeric"
+  };
+
+  let getDateString = function(date) {
+    return date ? date.toLocaleDateString("en-us", dateOptions) : '';
+  }
   
 
   return (
@@ -42,7 +51,7 @@ function ForecastCard(props) {
       <Box className={styles['weather-summary']}>
         <Box className={styles['details']}>
           <Typography>
-            {forecast.date}
+            {getDateString(forecast.date)}
           </Typography>
           <Box sx={{display: 'flex', flexDirection: 'row', marginLeft: 'auto'}}>
             <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
