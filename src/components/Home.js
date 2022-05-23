@@ -226,11 +226,11 @@ function Home() {
               <Box sx={{display: 'flex', flexDirection: 'row', marginTop: '-2rem'}}>
                 <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                   <FontAwesomeIcon style={{marginRight: '0.5rem', color: '#EA0D01'}} icon={solid('chevron-up')} size="lg"/>
-                  <Temperature size='medium'>{getTodayLow()}</Temperature>
+                  <Temperature size='medium'>{getTodayHigh()}</Temperature>
                 </Box>
                 <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginLeft: '1.5rem'}}>
                   <FontAwesomeIcon style={{marginRight: '0.5rem', color: '#2F66A9'}} icon={solid('chevron-down')} size="lg"/>
-                  <Temperature size='medium'>{getTodayHigh()}</Temperature>
+                  <Temperature size='medium'>{getTodayLow()}</Temperature>
                 </Box>
               </Box>
               <Box 
