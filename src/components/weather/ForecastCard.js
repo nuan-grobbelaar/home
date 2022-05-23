@@ -7,7 +7,10 @@ import Typography from '@mui/material/Typography';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
+import WeatherIcon from './WeatherIcon.js';
+
 import Temperature from './Temperature.js';
+import WeatherCard from './WeatherCard';
 
 function ForecastCard(props) {
 
@@ -20,14 +23,16 @@ function ForecastCard(props) {
       min: Math.round(props.forecast.Temperature.Minimum.Value),
       icon: props.forecast.Day.Icon,
       phrase: props.forecast.Day.IconPhrase,
-      longPhrase: props.forecast.Day.LongPhrase
+      longPhrase: props.forecast.Day.LongPhrase,
+      state: props.forecast.Day.Icon
     }) : setForecast({
       date: new Date(),
       max: '00',
       min: '00',
       icon: '',
       phrase: '',
-      longPhrase: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et'
+      longPhrase: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et',
+      state: 1
     });
 
     console.log(forecast);
@@ -46,7 +51,8 @@ function ForecastCard(props) {
   return (
     <Box sx={props.sx} className={styles.card}>
       <Box className={styles['icon-container']}>
-        <FontAwesomeIcon icon={solid('moon')} size="xl"/>
+        {/* <FontAwesomeIcon icon={solid('moon')} size="xl"/> */}
+        <WeatherIcon size={35} state={forecast.state}></WeatherIcon>
       </Box>
       <Box className={styles['weather-summary']}>
         <Box className={styles['details']}>
