@@ -28,8 +28,8 @@ function WeatherCard(props) {
 
   const [lastUpdate, setLastUpdate] = useState(-1);
   const [gotForecast, setGotForecast] = useState(false);
-  const [weather, setWeather] = useState({});
-  const [weatherForecast, setWeatherForecast] = useState({});
+  const [weather, setWeather] = useState();
+  const [weatherForecast, setWeatherForecast] = useState();
   const [weeklyForecast, setWeeklyForecast] = useState([]);
 
   useEffect(() => {
