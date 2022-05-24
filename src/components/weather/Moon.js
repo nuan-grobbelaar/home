@@ -26,7 +26,6 @@ function Moon(props) {
   }
 
   const getPhaseIcon = () => {
-    console.log(props.phase);
     return phaseMap[props.phase];
   }
 

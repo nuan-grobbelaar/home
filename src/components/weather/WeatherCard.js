@@ -14,6 +14,8 @@ import WeatherIcon from './WeatherIcon.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro'
 
+import { GiRadiations } from 'react-icons/gi';
+
 import axios from "axios";
 
 let axiosClient = axios.create({
@@ -102,6 +104,14 @@ function WeatherCard(props) {
     else return getSunrise(1);
   }
 
+  const getUvIndex = () => {
+    const today = getForecast(0);
+    if (!today) return '';
+    const result = today.AirAndPollen.filter(t => t.Name == 'UVIndex');
+    if (result.length <= 0) return '';
+    return result[0].Category.toLowerCase();
+  }
+
   const addDays = (date, days) => {
     var result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -141,7 +151,6 @@ function WeatherCard(props) {
   }
 
   const getWeatherIconNumber = () => {
-    weather ? console.log(weather.WeatherIcon) : console.log();
     return weather ? weather.WeatherIcon : -1;
   }
 
@@ -177,12 +186,19 @@ function WeatherCard(props) {
             marginTop: '1rem'
           }}
         >
-
-          {!isDay() && 
+          {!isDay() ? 
+            <Box className={styles['sunrise-container']} sx={{ marginRight: '0.5rem' }}>
+              <GiRadiations/>
+              <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>
+                {getUvIndex()}
+              </Typography>
+            </Box>
+          :
             <Typography sx={{ color: '#000000', marginRight: '0.5rem' }}>
               <Moon phase={getTodayMoonPhase()}/>
             </Typography>
           }
+
           {isDay() ? 
             <Box className={styles['sunset-container']}>
               <FontAwesomeIcon icon={solid('moon')} size="lg"/>

@@ -34,8 +34,6 @@ function ForecastCard(props) {
       longPhrase: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et',
       state: 1
     });
-
-    console.log(forecast);
   }, [props.forecast]);
 
   let dateOptions = {

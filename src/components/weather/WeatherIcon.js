@@ -69,7 +69,6 @@ function WeatherIcon(props) {
   ]
 
   const getIcon = () => {
-    console.log(props.state);
     if (props.state == -1) return <BiErrorCircle/>
     return icons[props.state];
   }
