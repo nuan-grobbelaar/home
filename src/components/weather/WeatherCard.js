@@ -186,7 +186,7 @@ function WeatherCard(props) {
             marginTop: '1rem'
           }}
         >
-          {!isDay() &&
+          {isDay() &&
             <Box className={styles['sunrise-container']} sx={{ marginRight: '0.5rem' }}>
               <GiRadiations/>
               <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>
