@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import "../../App.css"
 import styles from './Moon.module.css'
 import Box from '@mui/material/Box';
@@ -7,31 +7,89 @@ import Typography from '@mui/material/Typography';
 import { IconContext } from 'react-icons';
 
 import { 
-  WiMoonFull, WiMoonWaningGibbous4, 
-  WiMoonThirdQuarter, WiMoonWaningCrescent4, WiMoonNew, 
-  WiMoonWaxingCrescent3, WiMoonFirstQuarter, WiMoonWaxingGibbous4 
+  WiMoonFull, WiMoonThirdQuarter, WiMoonNew, WiMoonFirstQuarter,
+  WiMoonWaningGibbous1, WiMoonWaningGibbous2, WiMoonWaningGibbous3, WiMoonWaningGibbous4, WiMoonWaningGibbous5, WiMoonWaningGibbous6, 
+  WiMoonWaningCrescent1, WiMoonWaningCrescent2, WiMoonWaningCrescent3, WiMoonWaningCrescent4, WiMoonWaningCrescent5, WiMoonWaningCrescent6,  
+  WiMoonWaxingCrescent1, WiMoonWaxingCrescent2, WiMoonWaxingCrescent3, WiMoonWaxingCrescent4, WiMoonWaxingCrescent5,
+  WiMoonWaxingGibbous1, WiMoonWaxingGibbous2, WiMoonWaxingGibbous3, WiMoonWaxingGibbous4, WiMoonWaxingGibbous5, WiMoonWaxingGibbous6,
 } from 'react-icons/wi';
+
+import { BiErrorCircle } from 'react-icons/bi';
 
 function Moon(props) {
 
+  const [lastPhase, setLastPhase] = useState({today: props.today, phase: null, count: 0});
+
   let phaseMap = {
-    Full: <WiMoonFull/>,
-    WaningGibbous: <WiMoonWaningGibbous4/>,
-    ThirdQuarter: <WiMoonThirdQuarter/>,
-    WaningCrescent: <WiMoonWaningCrescent4/>,
-    New: <WiMoonNew/>,
-    WaxingCrescent: <WiMoonWaxingCrescent3/>,
-    FirstQuarter: <WiMoonFirstQuarter/>,
-    WaxingGibbous: <WiMoonWaxingGibbous4/>
+    New: [<WiMoonNew/>],
+    WaxingCrescent: [
+      <WiMoonWaxingCrescent1/>,
+      <WiMoonWaxingCrescent2/>,
+      <WiMoonWaxingCrescent3/>,
+      <WiMoonWaxingCrescent4/>,
+      <WiMoonWaxingCrescent5/>,
+    ],
+    FirstQuarter: [<WiMoonFirstQuarter/>],
+    WaxingGibbous: [
+      <WiMoonWaxingGibbous1/>,
+      <WiMoonWaxingGibbous2/>,
+      <WiMoonWaxingGibbous3/>,
+      <WiMoonWaxingGibbous4/>,
+      <WiMoonWaxingGibbous5/>,
+      <WiMoonWaxingGibbous6/>,
+    ],
+    Full: [<WiMoonFull/>],
+    WaningGibbous: [
+      <WiMoonWaningGibbous1/>,
+      <WiMoonWaningGibbous2/>,
+      <WiMoonWaningGibbous3/>,
+      <WiMoonWaningGibbous4/>,
+      <WiMoonWaningGibbous5/>,
+      <WiMoonWaningGibbous6/>
+    ],
+    ThirdQuarter: [<WiMoonThirdQuarter/>],
+    WaningCrescent: [
+      <WiMoonWaningCrescent1/>,
+      <WiMoonWaningCrescent2/>,
+      <WiMoonWaningCrescent3/>,
+      <WiMoonWaningCrescent4/>,
+      <WiMoonWaningCrescent5/>,
+      <WiMoonWaningCrescent6/>,
+    ],
   }
 
   const getPhaseIcon = () => {
-    return phaseMap[props.phase];
+    //In case AccuWeather returns something the code doesn't recognize
+    if (!phaseMap.hasOwnProperty(props.phase)) {
+      console.log(props.phase);
+      return <BiErrorCircle/>;
+    }
+    
+    //On load
+    if (!lastPhase.phase) {
+      setLastPhase({today: props.today, phase: props.phase, count: 0});
+      return phaseMap[props.phase][0];
+    }
+    
+    //On subsequent updates within the same day
+    if (lastPhase.today == props.today) {
+      if (lastPhase.phase == props.phase) {
+        return phaseMap[props.phase][lastPhase.count];
+      } else {
+        return phaseMap[props.phase][0];
+      }
+    } 
+    
+    // On first update of the day
+    else {
+      setLastPhase({today: props.today, phase: props.phase, count: 0});
+      return phaseMap[props.phase][0];
+    }
   }
 
   return (
     <Box sx={props.sx} className={styles['box']}>
-      <IconContext.Provider value={{size: 24}}>
+      <IconContext.Provider value={{size: 20}}>
         <>
           {getPhaseIcon()}
         </>

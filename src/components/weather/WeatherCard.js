@@ -186,27 +186,25 @@ function WeatherCard(props) {
             marginTop: '1rem'
           }}
         >
-          {isDay() ? 
+          {!isDay() &&
             <Box className={styles['sunrise-container']} sx={{ marginRight: '0.5rem' }}>
               <GiRadiations/>
               <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>
                 {getUvIndex()}
               </Typography>
             </Box>
-          :
-            <Typography sx={{ color: '#000000', marginRight: '0.5rem' }}>
-              <Moon phase={getTodayMoonPhase()}/>
-            </Typography>
           }
 
-          {isDay() ? 
-            <Box className={styles['sunset-container']}>
-              <FontAwesomeIcon icon={solid('moon')} size="lg"/>
-              <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>
+          <Box className={styles['sunset-container']} sx={{marginRight: '0.5rem'}}>
+            <Moon today={new Date()} phase={getTodayMoonPhase()}/>  
+            {isDay() &&
+              <Typography sx={{ color: '#000000'}}>
                 {getSunInfo()}
               </Typography>
-            </Box>
-            :
+            }
+          </Box>
+
+          {!isDay() &&
             <Box className={styles['sunrise-container']}>
               <FontAwesomeIcon icon={solid('sun')} size="lg"/>
               <Typography sx={{ color: '#000000', marginLeft: '0.5rem' }}>
