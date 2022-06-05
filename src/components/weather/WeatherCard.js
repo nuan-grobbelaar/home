@@ -18,8 +18,8 @@ import { GiRadiations } from 'react-icons/gi';
 
 import axios from "axios";
 
-const forecastTestData = require('../../test/forecast.json'); 
-const todayTestData = require('../../test/today.json'); 
+// const forecastTestData = require('../../test/forecast.json'); 
+// const todayTestData = require('../../test/today.json'); 
 
 let axiosClient = axios.create({
   baseURL: "http://dataservice.accuweather.com/",
@@ -31,8 +31,8 @@ function WeatherCard(props) {
 
   const [lastUpdate, setLastUpdate] = useState(-1);
   const [gotForecast, setGotForecast] = useState(false);
-  const [weather, setWeather] = useState(todayTestData);
-  const [weatherForecast, setWeatherForecast] = useState(forecastTestData);
+  const [weather, setWeather] = useState();
+  const [weatherForecast, setWeatherForecast] = useState();
   const [weeklyForecast, setWeeklyForecast] = useState([]);
 
   useEffect(() => {
