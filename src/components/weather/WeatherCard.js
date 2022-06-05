@@ -18,6 +18,9 @@ import { GiRadiations } from 'react-icons/gi';
 
 import axios from "axios";
 
+const forecastTestData = require('../../test/forecast.json'); 
+const todayTestData = require('../../test/today.json'); 
+
 let axiosClient = axios.create({
   baseURL: "http://dataservice.accuweather.com/",
   responseType: 'json',
@@ -28,8 +31,8 @@ function WeatherCard(props) {
 
   const [lastUpdate, setLastUpdate] = useState(-1);
   const [gotForecast, setGotForecast] = useState(false);
-  const [weather, setWeather] = useState();
-  const [weatherForecast, setWeatherForecast] = useState();
+  const [weather, setWeather] = useState(todayTestData);
+  const [weatherForecast, setWeatherForecast] = useState(forecastTestData);
   const [weeklyForecast, setWeeklyForecast] = useState([]);
 
   useEffect(() => {
@@ -52,7 +55,7 @@ function WeatherCard(props) {
     setWeeklyForecast(getForecastRange(1, 4));
     if (props.date && props.date.getHours() % 4 == 0) {
       if (!gotForecast) {
-      	axiosClient.get("forecasts/v1/daily/5day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
+      	axiosClient.get("forecasts/v1/daily/10day/301285?apikey=DeCxXs7gAj6Gyz349pw50Gpb8MeNCoPC&details=true&metric=true")
           .then((response) => {
             setWeatherForecast(response.data);
             setWeeklyForecast(getForecastRange(1, 4));

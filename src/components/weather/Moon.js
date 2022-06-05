@@ -67,23 +67,24 @@ function Moon(props) {
     
     //On load
     if (!lastPhase.phase) {
+      console.log('on load');
       setLastPhase({today: props.today, phase: props.phase, count: 0});
       return phaseMap[props.phase][0];
     }
     
     //On subsequent updates within the same day
-    if (lastPhase.today == props.today) {
+    if (lastPhase.today.getDate() == props.today.getDate()) {
       if (lastPhase.phase == props.phase) {
         return phaseMap[props.phase][lastPhase.count];
       } else {
         return phaseMap[props.phase][0];
       }
     } 
-    
-    // On first update of the day
+
     else {
-      setLastPhase({today: props.today, phase: props.phase, count: 0});
-      return phaseMap[props.phase][0];
+      console.log(props.today.getDate() + ', ' + props.phase + ', ' + lastPhase.count+1);
+      setLastPhase({today: props.today, phase: props.phase, count: lastPhase.count+1});
+      return phaseMap[props.phase][lastPhase.count+1];
     }
   }
 
