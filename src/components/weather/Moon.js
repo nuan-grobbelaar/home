@@ -29,7 +29,7 @@ function Moon(props) {
       <WiMoonWaxingCrescent4/>,
       <WiMoonWaxingCrescent5/>,
     ],
-    FirstQuarter: [<WiMoonFirstQuarter/>],
+    First: [<WiMoonFirstQuarter/>],
     WaxingGibbous: [
       <WiMoonWaxingGibbous1/>,
       <WiMoonWaxingGibbous2/>,
@@ -47,7 +47,7 @@ function Moon(props) {
       <WiMoonWaningGibbous5/>,
       <WiMoonWaningGibbous6/>
     ],
-    ThirdQuarter: [<WiMoonThirdQuarter/>],
+    Third: [<WiMoonThirdQuarter/>],
     WaningCrescent: [
       <WiMoonWaningCrescent1/>,
       <WiMoonWaningCrescent2/>,
